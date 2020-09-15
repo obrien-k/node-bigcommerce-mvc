@@ -78,7 +78,6 @@ router.get('/products/update', (req, res) => {
               return resolve;
             });
             
-            try {
                 const context = {}
                 context.data = s;
                 const newProduct = {}
@@ -86,8 +85,6 @@ router.get('/products/update', (req, res) => {
                 newProduct.product_id = context.data.id;
                 newProduct.type = context.data.type;
                 newProduct.sku = context.data.sku;
-                newProduct.slug = context.data.custom_url.url;
-                newProduct.variants = context.data.variants;
                 newProduct.date_modified = context.data.date_modified;
 
                 console.log(newProduct);
@@ -107,14 +104,6 @@ router.get('/products/update', (req, res) => {
                     console.log(newProduct.name + " is already inserted");
                   }
                 });
-            }
-            catch(err) {
-
-            console.log('DONE with for loop from line 73')
-              return err;
-
-            
-          }
             }
            
       }
