@@ -11,6 +11,7 @@
   {{#each Stores}}
     <a href="/store/{{hash}}" + >{{{domain}}} Store Info</a>
   {{/each}}
+    <a href="/products/update">Update Products</a>
   {{else}}
   <a href="/store/update">Connect Store</a>
    <p>Connect a Store to download products</p>
@@ -31,6 +32,5 @@
         {{/each}}
     {{/each}}
     {{else}}
-    <a href="/products/update">Update Products</a>
 {{/if}}
 </main>

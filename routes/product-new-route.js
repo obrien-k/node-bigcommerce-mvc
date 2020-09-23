@@ -77,11 +77,11 @@ router.get('/products/update', (req, res) => {
               v.forEach(element => s.push(element))
               return res;
             });
-            
             try {
                 const context = {}
-                context.data = s;
+                context.data = JSON.stringify(s);
                 const newProduct = {}
+                newProduct.products = context.data;
                 newProduct.name = context.data.name;
                 newProduct.product_id = context.data.id;
                 newProduct.type = context.data.type;
@@ -89,7 +89,7 @@ router.get('/products/update', (req, res) => {
                 newProduct.slug = context.data.custom_url.url;
                 newProduct.variants = context.data.variants;
                 newProduct.date_modified = context.data.date_modified;
-
+                console.log(context);
                 console.log(newProduct);
                 Product.collection.findOne({ name: newProduct.name }, null, function(
                   err,
