@@ -14,4 +14,9 @@ PORT=3333
 You should be able to run `node index.js` successfully, but when reaching the localhost:PORT your console might show errors when trying to access the database.
 
 # Errors
+
 I started running into an error which caused me to enable a dev dependency for v4.5.0 of the Handlebars NPM package, see https://handlebarsjs.com/api-reference/runtime-options.html#options-to-control-prototype-access for details. For this to work as expected, you need to install the app with developer dependencies, this can be done with the command `npm i -D`. 
+
+# Developer Branch
+
+If you're on the dev branch, installing devDependencies also installs the node-hashtable and nan Node packages to enable use of variants in future iterations.
