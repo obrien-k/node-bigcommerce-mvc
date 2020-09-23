@@ -5,7 +5,6 @@ const router = express.Router();
 const Product = require('../models/Product.js');
 const Store = require('../models/Store.js');
 BigCommerce = require('node-bigcommerce');
-const HashTable = require('hashtable');
 
 const bigCommerce = new BigCommerce({
   logLevel: 'info',
@@ -79,45 +78,9 @@ router.get('/products/update', (req, res) => {
               return res;
             });
             
-            hashtable = new HashTable();
-            hashtable.put('data', {value: s});
             try {
-              hashtable.forEach((k,v) =>{ v = JSON.stringify(v); });
-              hashtable.forEach((k,v) =>{
-                v['value'].forEach((g) =>{
-                  // These if statements are likely both true, should be tested further.
-                  if (g.hasOwnProperty('id')) {
-                    console.log("EXECUTE LINE 66");
-                    delete g['brand_id'];
-                    delete g['option_set_id'];
-                    delete g['option_set_display'];
-                }
-                  
-                  /* Though this is true for variants without the array populated,
-                  this causes an error: TypeError: v.forEach is not a function */
-  
-                  /* This can be worked around by manually setting the product ID in the original 
-                  get request to BigCommerce and should be fixed long-term*/
-  
-                  /* I may have resolved this by using [prodArr] instead of prodArr on line 38
-                  which also resolved the comment on line 49. To verify this, pages should be iterated
-                  to ensure each work as it requires hard coding to change the page*/
-  
-                  if(g.hasOwnProperty('option_values')){
-                    // Assign the option_values array of the current value to 'o'
-                    o = g.option_values;
-                    console.log('o')
-                    o.forEach((f) =>{
-                      if (err) throw err;
-                      delete f['id'];
-                      delete f['option_id'];
-                      console.log('value is: ' + JSON.stringify(f));
-                    })
-                    
-                  }
-  
                 const context = {}
-                context.data = g;
+                context.data = s;
                 const newProduct = {}
                 newProduct.name = context.data.name;
                 newProduct.product_id = context.data.id;
@@ -144,10 +107,6 @@ router.get('/products/update', (req, res) => {
                     console.log(newProduct.name + " is already inserted");
                   }
                 });
-                
-                })
-              });
-              
             }
             catch(err) {
               return err;
