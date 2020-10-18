@@ -13,8 +13,8 @@
     "node-bigcommerce": "^4.1.0"
   },
   "devDependencies": {
-    "handlebars": "4.5.0",
-    "hashtable": "github:fabrice102/node-hashtable"
+    "hashtable": "github:fabrice102/node-hashtable",
+    "handlebars": "4.5.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
