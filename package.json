@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "hashtable": "github:fabrice102/node-hashtable",
-    "handlebars": "4.5.0"
+    "handlebars": "4.5.3"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
