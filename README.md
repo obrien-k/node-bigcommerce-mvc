@@ -1,3 +1,7 @@
+# Pre-requisities
+
+Node-Gyp's NAN package dependency causes the node-hashtable dependency within this package to remain locked in <v12 of Node, I recommend targeting v10.22.1.
+
 # Setup
 
 After running `npm i`, you'll need to supply credentials for a BC store and MongoDB server. This app assumes usage of dotenv and a .env file or similar. An example of what this might look like:
