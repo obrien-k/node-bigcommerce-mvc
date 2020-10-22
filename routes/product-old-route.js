@@ -76,7 +76,7 @@ router.get('/products/update', (req, res) => {
               prodArr = data.data;
               v = [prodArr];
               v.forEach(element => s.push(element))
-              return resolve;
+              return res;
             });
             
             hashtable = new HashTable();
@@ -128,7 +128,7 @@ router.get('/products/update', (req, res) => {
                 newProduct.date_modified = context.data.date_modified;
 
                 console.log(newProduct);
-                return res = Product.collection.findOne({ name: newProduct.name }, null, function(
+                Product.collection.findOne({ name: newProduct.name }, null, function(
                   err,
                   docs
                 ) {
@@ -150,12 +150,10 @@ router.get('/products/update', (req, res) => {
               
             }
             catch(err) {
-
-            console.log('DONE with for loop from line 73')
               return err;
-
+            }
             
-          }
+            console.log('DONE with for loop from line 73')
             }
            
       }

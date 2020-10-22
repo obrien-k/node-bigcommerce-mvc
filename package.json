@@ -9,9 +9,11 @@
     "express": "^4.17.1",
     "express-handlebars": "^3.1.0",
     "mongoose": "^5.9.16",
+    "nan": "^2.14.1",
     "node-bigcommerce": "^4.1.0"
   },
   "devDependencies": {
+    "hashtable": "github:fabrice102/node-hashtable",
     "handlebars": "4.5.0"
   },
   "scripts": {
