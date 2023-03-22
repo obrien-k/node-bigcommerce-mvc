@@ -7,15 +7,15 @@ BigCommerce = require('node-bigcommerce');
 
 const bigCommerce = new BigCommerce({
   logLevel: 'info',
-  clientId: process.env.CLIENT,
-  accessToken: process.env.TOKEN,
-  secret: process.env.SECRET,
-  storeHash: process.env.HASH,
+  clientId: process.env.BIGC_CLIENT_ID,
+  accessToken: process.env.BIGC_ACCESS_TOKEN,
+  secret: process.env.BIGC_CLIENT_SECRET,
+  storeHash: process.env.BIGC_STORE_HASH,
   responseType: 'json',
   apiVersion: 'v2' // Default is v2
 });
 router.get('/store', (req, res) => {
-  Store.find({}, (err, allStores) => {
+  Store.find({}).lean().exec((err, allStores) => {
     if (err) {
       console.log(err);
       res.redirect('/');
@@ -27,52 +27,38 @@ router.get('/store', (req, res) => {
     }
   });
 });
-router.get('/store/update', (req, res) => {
-  res.render('index', { message: 'Updating' });
-  const getStoreInfo = new Promise(async function() {
-    try{
-     bigCommerce.get('/store').then(data => {
-        console.log('RUNNING...')
-        const context = {}
-                context.data = data;
-                const newStore = {}
-                newStore.hash = context.data.id;
-                newStore.domain = context.data.domain;
-                newStore.secure_url = context.data.secure_url;
-                newStore.status = context.data.status;
-                newStore.name = context.data.name;
 
-                console.log(newStore);
-                Store.collection.findOne({ hash: newStore.hash }, null, function(
-                  err,
-                  docs
-                ) {
-                  if (docs === null) {
-                    Store.collection.insertOne(newStore , function(err, res) {
-                      if (err) throw err;
-                      console.log(
-                        'Number of documents inserted: ' + res.insertedCount
-                      );
-                      });
-                      if (err) throw err;
-                  }
-                  else {
-                    console.log(newStore.name + " is already inserted");
-                  }
-                } 
-                )
-                
-                })
-              }
-      catch(err){
-        console.log(err + 'line 71 Store.js');
-        return err;
-      }
-  });
-  getStoreInfo;
+router.get('/store/update', async (req, res) => {
+  try {
+    res.render('index', { message: 'Updating' });
+
+    const data = await bigCommerce.get('/store');
+
+    const newStore = {
+      hash: data.id,
+      domain: data.domain,
+      secure_url: data.secure_url,
+      status: data.status,
+      name: data.name
+    };
+
+    const existingStore = await Store.collection.findOne({ hash: newStore.hash });
+
+    if (!existingStore) {
+      const result = await Store.collection.insertOne(newStore);
+
+      console.log(`Number of documents inserted: ${result.insertedCount}`);
+    } else {
+      console.log(`${newStore.name} is already inserted`);
+    }
+  } catch (err) {
+    console.log(`${err} line 71 Store.js`);
+    return err;
+  }
 });
+
 router.get('/store/:storeId', (req, res) => {
-  let storeId = req.params.storeId;
+  const storeId = req.params.storeId;
 
   Store.findOne({hash: storeId}, {_id:0}).exec((err, ret) => {
     if (err) {
@@ -81,11 +67,12 @@ router.get('/store/:storeId', (req, res) => {
     res.render('store', {
       title: 'Store Details',
       Store: ret,
-      storeId: ret.storeId,
+      storeId,
       message: ''
     });
   });
 })
+
 
 
 module.exports = router;
