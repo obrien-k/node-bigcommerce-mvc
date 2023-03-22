@@ -4,8 +4,8 @@ const express = require('express'),
   router = express.Router(),
   bodyParser = require('body-parser'),
   exphbs = require('express-handlebars'),
-  BigCommerce = require('node-bigcommerce');
-  mongoose = require('mongoose');
+  mongoose = require('mongoose'),
+  bigCommerce = require('./datasources/bigcommerce.js');
   (app = express()),
   (hbs = exphbs.create({
     /* config */
@@ -25,16 +25,6 @@ const server = app.listen(process.env.PORT, () => {
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.connection.on('error', err => {
   console.log(`MongoDB Connection Error: ${err}`);
-});
-
-const bigCommerce = new BigCommerce({
-  logLevel: 'info',
-  clientId: process.env.BIGC_CLIENT_ID,
-  accessToken: process.env.BIGC_ACCESS_TOKEN,
-  secret: process.env.BIGC_CLIENT_SECRET,
-  storeHash: process.env.BIGC_STORE_HASH,
-  responseType: 'json',
-  apiVersion: 'v3' // Default is v2
 });
 
 app.engine(
@@ -68,6 +58,14 @@ app.use(bodyParser.json());
 app.use(productRoute);
 app.use(storeRoute);
 
+// logger middleware
+const logger = (req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+};
+
+app.use(logger);
+
 // ROUTES
 app.get('/', async (req, res) => {
   try {
@@ -84,14 +82,6 @@ app.get('/', async (req, res) => {
   }
 });
 
-// logger middleware
-const logger = (req, res, next) => {
-  console.log(`${req.method} ${req.path}`);
-  next();
-};
-
-app.use(logger);
-
 router.get('/auth', (req, res, next) => {
   bigCommerce
     .authorize(req.query)
@@ -106,6 +96,15 @@ router.get('/load', (req, res, next) => {
   try {
     const data = bigCommerce.verify(req.query['signed_payload']);
     res.render('integrations/welcome', { title: 'Welcome!', data: data });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/uninstall', (req, res, next) => {
+  try {
+    const data = bigCommerce.verify(req.query['signed_payload']);
+    res.render('integrations/welcome', { title: 'Goodbye :(', data: data });
   } catch (err) {
     next(err);
   }

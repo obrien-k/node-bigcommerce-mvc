@@ -1,3 +1,23 @@
+const express = require('express');
+const router = express.Router();
+const bigCommerce = require('../../datasources/bigcommerce.js');
+const querystring = require('querystring');
+const axios = require('axios');
+const bcrypt = require('bcrypt');
+const Store = require('../models/Store.js');
+
+// Initialize the BigCommerce API client
+const bigCommerce = new BigCommerce({
+  logLevel: 'info',
+  clientId: process.env.BIGC_CLIENT_ID,
+  accessToken: process.env.BIGC_ACCESS_TOKEN,
+  secret: process.env.BIGC_CLIENT_SECRET,
+  storeHash: process.env.BIGC_STORE_HASH,
+  responseType: 'json',
+  apiVersion: 'v3' // Use latest API version
+});
+
+// Redirect the user to the BigCommerce authorization page
 router.get('/authorize', (req, res) => {
   const authUrl = bigCommerce.getAuthorizeUrl({
     callback: process.env.APP_URL + '/auth/callback',
@@ -59,3 +79,5 @@ router.get('/auth/callback', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
+module.exports = router
