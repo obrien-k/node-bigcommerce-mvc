@@ -4,21 +4,27 @@ const axios = require('axios');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Store = require('../models/Store.js');
+const User = require('../models/User.js');
 const bigCommerce = require('../datasources/bigcommerce.js');
 
-router.get('/', (req, res, next) => {
+router.get('/auth', (req, res, next) => {
   bigCommerce.authorize(req.query)
   .then(data => console.log(data))
-  .then(data => res.render('auth', { title: 'Authorized!' })
+  .then(data => res.render('integrations/auth', { title: 'Authorized!' })
   .catch(err));
   });
-
+// Example /auth call from BigCommerce
+// GET https://your_app.example.com/auth?account_uuid=12345678-90ab-cdef-1234-567890abcdef&code=qr6h3thvbvag2ffq&context=stores%2Fg5cd38&scope=store_v2_orders+store_channel_listings_read_only
+// Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+// Referer: https://login.bigcommerce.com/
 
 // Handle the callback from BigCommerce after the user has granted authorization
-router.get('/auth', async (req, res, next) => {
+router.get('/auth/callback', async (req, res, next) => {
   const clientId = process.env.BIGC_CLIENT_ID;
   const clientSecret = process.env.BIGC_CLIENT_SECRET;
-  const storeHash = req.query.context ? req.query.context.replace('stores/', '') : process.env.BIGC_STORE_HASH;
+  // ruling out account_uuid bugginess
+  const accountUuid = req.query.account_uuid;
+  const storeHash = req.query.context ? req.query.context.replace('stores/', '') : null;
   const authCode = req.query.code;
   const scopes = req.query.scope || 'store_v2_default';
 
@@ -31,6 +37,11 @@ router.get('/auth', async (req, res, next) => {
     code: authCode,
     scope: scopes
   };  
+  console.log('Account UUID:', accountUuid);
+  console.log('Client ID:', clientId);
+  console.log('Client Secret:', clientSecret);
+  console.log('Redirect URI:', process.env.REDIRECT_URI);
+  console.log('Token Payload:', JSON.stringify(tokenPayload, null, 2));
 
   try {
     const tokenResponse = await axios.post(tokenUrl, tokenPayload, {
@@ -82,7 +93,7 @@ router.get('/auth', async (req, res, next) => {
 });
 
 async function getStoreData(storeHash, accessToken) {
-  const headers = { 'X-Auth-Token': accessToken };
+  const headers = { 'X-Auth-Token': accessToken, 'Accept': 'application/json' };
   const storeUrl = `https://api.bigcommerce.com/stores/${storeHash}/v2/store`;
 
   try {
