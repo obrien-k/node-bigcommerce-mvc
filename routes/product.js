@@ -17,34 +17,46 @@ const bigCommerce = new BigCommerce({
 });
 
 // Get all products from the database and render the index page
-router.get('/products', (req, res) => {
-  Product.find({}, (err, allProducts) => {
-    if (err) {
-      console.log(err);
-      res.redirect('/');
-    } else {
-      res.render('index', {
-        title: 'MVC Example | View Products',
-        Products: allProducts
-      });
-    }
-  });
+router.get('/products', async (req, res, next) => {
+  try {
+    const allProducts = await Product.find({}).exec();
+    res.render('index', {
+      title: 'MVC Example | View Products',
+      Products: allProducts
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // Get a specific product from the database and render the product details page
-router.get('/:id', async (req, res) => {
-  const productId = req.params.id;
-  const product = await Product.findById(productId).exec();
-  const store = await Store.findOne({}).exec();
-  res.render('product_details', {
-    title: 'Product Details',
-    Product: product,
-    Store: store
-  });
+const getStoreInfo = async (req, res, next) => {
+  try {
+    const store = await Store.findOne({}).exec();
+    req.store = store;
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
+
+router.get('/:id', getStoreInfo, async (req, res, next) => {
+  try {
+    const productId = req.params.id;
+    const product = await Product.findById(productId).exec();
+    const store = req.store;
+    res.render('product_details', {
+      title: 'Product Details',
+      Product: product,
+      Store: store
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // Update the products in the database based on data from BigCommerce
-router.get('/products/update', async (req, res) => {
+router.get('/products/update', async (req, res, next) => {
   try {
     res.render('index', { message: 'Updating' });
     const response = await bigCommerce.get('/catalog/products');
@@ -67,36 +79,37 @@ router.get('/products/update', async (req, res) => {
     console.log('Products updated successfully');
     res.redirect('/');
   } catch (err) {
-    console.error(err);
-    res.render('index', { message: 'Error updating products' });
+    next(err);
   }
 });
 
 // Edit a specific product in the database
-router.post('/products/edit/:id', async (req, res) => {
+router.post('/products/edit/:id', async (req, res, next) => {
   try {
     const productId = req.params.id;
     const productData = req.body;
+
+    // Validate input data
+    if (!productData.name || !productData.type || !productData.sku) {
+      throw new Error('Invalid input data');
+    }
+
     await Product.findByIdAndUpdate(productId, productData).exec();
     console.log(`Product ${productId} updated successfully`);
     res.redirect('/');
   } catch (err) {
-    console.error(err);
-    res.render('index', { message: 'Error updating product' });
+    next(err);
   }
 });
 
 // Delete a specific product from the database
-router.get('/products/delete/:id', async (req, res) => {
+router.get('/products/delete/:id', async (req, res, next) => {
   try {
     const productId = req.params.id;
     await Product.findByIdAndRemove(productId).exec();
     console.log(`Product ${productId} deleted successfully`);
     res.redirect('/');
   } catch (err) {
-    console.error(err);
-    res.render('index', { message: 'Error deleting product' });
+    next(err);
   }
 });
-
-module.exports = router;

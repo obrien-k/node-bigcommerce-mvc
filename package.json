@@ -14,7 +14,6 @@
     "node-bigcommerce": "^4.1.0"
   },
   "devDependencies": {
-    "hashtable": "github:fabrice102/node-hashtable",
     "handlebars": "4.5.0"
   },
   "scripts": {
