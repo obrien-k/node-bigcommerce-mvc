@@ -17,7 +17,7 @@ const express = require('express'),
   const Store = require('./models/Store.js');
   
 
-const server = app.listen(process.env.PORT, () => {
+const server = app.listen(process.env.PORT || 3000, () => {
   console.log('Express listening at ', server.address().port);
 });
 

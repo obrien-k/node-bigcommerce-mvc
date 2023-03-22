@@ -1,42 +1,49 @@
-<a href="/">
-  <h2>MVC Example</h2>
-</a></br>
-
 {{#if message}}
-<p class="text-center text-danger">{{message}}</p>
+  <p class="text-center text-danger">{{message}}</p>
 {{/if}}
+
 <a href="/">Go Back</a>
 
 {{#if Product}}
 
-<div id="productDetails" style="max-height:30%;max-width:80%;">
-<h3>{{Product.name}}</h3>
+  <div id="productDetails" style="max-height:30%;max-width:80%;">
+    <h3>{{Product.name}}</h3>
+    <p>{{Product.type}}</p>
 
-{{Product.type}}
-{{#if Store}}
-<h4><a href="{{link Store.hash Product.product_id}}">Buy Now</a></h4>
+    {{#if Store}}
+      <h4>
+        <a href="{{link Store.hash Product.product_id}}">
+          Buy Now
+        </a>
+      </h4>
+      <p>Click the "Buy Now" link to purchase this product from {{Store.name}}.</p>
+    {{/if}}
+
+    {{#each Product.variants}}
+      <h4>
+        <a href="{{link Store.hash sku}}">
+          Buy Now
+        </a>
+      </h4>
+
+      <ul>
+        {{#if image_url}}
+          <li>
+            <img src="{{image_url}}" style="max-width: 250px; max-height:250px" />
+          </li>
+        {{/if}}
+      </ul>
+
+      <h4>Product Options</h4>
+      <ul>
+        {{#each option_values}}
+          <li>
+            <strong>{{option_display_name}}:</strong> {{label}}
+          </li>
+        {{/each}}
+      </ul>
+
+    {{/each}}
+  </div>
+
 {{/if}}
-
-{{#each Product.variants}}
-
-<h4><a href="{{link Store.hash sku}}">Buy Now</a></h4>
-
-
-<ul>
-{{#if image_url}}
-<li><img src="{{image_url}}" style="max-width: 250px; max-height:250px" /></li>
-{{else}}
-{{/if}}
-</ul>
-
-{{#each option_values}}
-<strong>{{option_display_name}}</strong>: <em>{{label}}</em>
-
-
-{{/each}}
-{{/each}}
-
-
-</div>
-{{/if}}
-

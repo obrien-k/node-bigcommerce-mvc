@@ -1,36 +1,53 @@
-<a href="/"><header>MVC Example</header></a>
-</br>
-
 {{#if message}}
-<p class="text-center text-danger">{{message}}</p>
+  <p class="text-center text-danger">{{message}}</p>
 {{/if}}
-
 
 <main>
   {{#if Stores}}
-  {{#each Stores}}
-    <a href="/store/{{this.hash}}" + >{{{domain}}} Store Info</a>
-    <a href="/products/update">Update Products</a>
-  {{/each}}
-  {{else}}
-  <a href="/store/update">Connect Store</a>
-   <p>Connect a Store to download products</p>
-{{/if}}
-{{#if Products}}
-    <h3>Products</h3>
-    {{#each Products}}
-
-      <h4><a href="{{_id}}">{{name}}</a></h4>
-
-      {{sku}}
-
-      {{type}}
-        {{#each variants}}
-          {{#each option_values}}
-          <strong>{{option_display_name}}</strong>: <em>{{label}}</em>
-          {{/each}}
-        {{/each}}
+    <h2>Welcome, back! You've connected the following stores to MVC:</h2>
+    {{#each Stores}}
+      <p>
+        <strong>Store Name:</strong> {{this.name}}
+        <br>
+        <strong>Store Domain:</strong> {{this.domain}}
+      </p>
+      <a href="/store/{{this.hash}}">View Store Info</a>
+      <a href="/products/update">Sync Products from Store</a>
     {{/each}}
+  {{else}}
+    <h2>Connect Your Store</h2>
+    <p>
+      To start syncing your store's products, you'll need to connect your store to this app.
+      <br>
+      <a href="/store/update">Connect Store Now</a>
+    </p>
+  {{/if}}
+
+  {{#if Products}}
+    <h2>Synced Products</h2>
+    {{#each Products}}
+      <h3>{{name}}</h3>
+      <p>
+        <strong>Product Type:</strong> {{type}}
+        <br>
+        <strong>SKU:</strong> {{sku}}
+      </p>
+      {{#if variants}}
+        <h4>Product Options</h4>
+        <ul>
+          {{#each variants}}
+            {{#each option_values}}
+              <li><strong>{{option_display_name}}:</strong> {{label}}</li>
+            {{/each}}
+          {{/each}}
+        </ul>
+      {{/if}}
+    {{/each}}
+  {{else}}
+    {{#if Stores}}
+      <p>No products have been synced from your store yet.</p>
     {{else}}
-{{/if}}
+      <p>Connect your store to download products.</p>
+    {{/if}}
+  {{/if}}
 </main>

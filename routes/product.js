@@ -4,17 +4,7 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product.js');
 const Store = require('../models/Store.js');
-const BigCommerce = require('node-bigcommerce');
-
-const bigCommerce = new BigCommerce({
-  logLevel: 'info',
-  clientId: process.env.BIGC_CLIENT_ID,
-  accessToken: process.env.BIGC_ACCESS_TOKEN,
-  secret: process.env.BIGC_CLIENT_SECRET,
-  storeHash: process.env.BIGC_STORE_HASH,
-  responseType: 'json',
-  apiVersion: 'v3'
-});
+const bigCommerce = require('../datasources/bigcommerce.js');
 
 // Get all products from the database and render the index page
 router.get('/products', async (req, res, next) => {
@@ -116,7 +106,5 @@ router.get('/products/delete/:id', async (req, res, next) => {
     next(err);
   }
 });
-
-
 
 module.exports = router;

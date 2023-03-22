@@ -42,7 +42,7 @@ router.get('/store/update', async (req, res) => {
       console.log(`${newStore.name} is already inserted`);
     }
   } catch (err) {
-    console.log(`${err} line 71 Store.js`);
+    console.log(`${err} Store.js`);
     return err;
   }
 });
