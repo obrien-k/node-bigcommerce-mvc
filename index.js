@@ -5,16 +5,21 @@ const express = require('express'),
   bodyParser = require('body-parser'),
   exphbs = require('express-handlebars'),
   mongoose = require('mongoose'),
+  helmet = require('helmet'),
   bigCommerce = require('./datasources/bigcommerce.js');
   (app = express()),
   (hbs = exphbs.create({
     /* config */
   }));
 
-  const productRoute = require('./routes/product');
-  const Product = require('./models/Product.js');  
-  const storeRoute = require('./routes/store');
-  const Store = require('./models/Store.js');
+  // Allow embedding the site within an iframe only from the same origin
+  
+  // Routes
+  const productRoute = require('./routes/product'),
+        Product = require('./models/Product.js'),
+        storeRoute = require('./routes/store'),
+        Store = require('./models/Store.js'),
+        authRoute = require('./routes/auth');
   
 
 const server = app.listen(process.env.PORT || 3000, () => {
@@ -55,8 +60,14 @@ app.set('view engine', '.hbs');
 app.set('views', __dirname + '/views');
 app.use(express.static('views/images')); 
 app.use(bodyParser.json());
-app.use(productRoute);
-app.use(storeRoute);
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+    frameAncestors: ["'self'", "https://store-bq4uczryb8.mybigcommerce.com/"]
+  }
+}));
+
+app.use(productRoute, storeRoute, authRoute);
 
 // logger middleware
 const logger = (req, res, next) => {
@@ -67,6 +78,7 @@ const logger = (req, res, next) => {
 app.use(logger);
 
 // ROUTES
+/*
 app.get('/', async (req, res) => {
   try {
     const allProducts = await Product.find({});
@@ -82,30 +94,4 @@ app.get('/', async (req, res) => {
   }
 });
 
-router.get('/auth', (req, res, next) => {
-  bigCommerce
-    .authorize(req.query)
-    .then(data =>
-      res
-        .render('integrations/auth', { title: 'Authorized!', data: data })
-        .catch(next)
-    );
-});
-
-router.get('/load', (req, res, next) => {
-  try {
-    const data = bigCommerce.verify(req.query['signed_payload']);
-    res.render('integrations/welcome', { title: 'Welcome!', data: data });
-  } catch (err) {
-    next(err);
-  }
-});
-
-router.get('/uninstall', (req, res, next) => {
-  try {
-    const data = bigCommerce.verify(req.query['signed_payload']);
-    res.render('integrations/welcome', { title: 'Goodbye :(', data: data });
-  } catch (err) {
-    next(err);
-  }
-});
+*/
