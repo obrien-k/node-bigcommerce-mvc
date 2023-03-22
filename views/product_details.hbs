@@ -6,44 +6,72 @@
 
 {{#if Product}}
 
-  <div id="productDetails" style="max-height:30%;max-width:80%;">
+  <div id="productDetails" style="max-width: 80%; margin: 0 auto;">
     <h3>{{Product.name}}</h3>
-    <p>{{Product.type}}</p>
 
-    {{#if Store}}
-      <h4>
-        <a href="{{link Store.hash Product.product_id}}">
-          Buy Now
-        </a>
-      </h4>
-      <p>Click the "Buy Now" link to purchase this product from {{Store.name}}.</p>
-    {{/if}}
-
-    {{#each Product.variants}}
-      <h4>
-        <a href="{{link Store.hash sku}}">
-          Buy Now
-        </a>
-      </h4>
-
-      <ul>
-        {{#if image_url}}
-          <li>
-            <img src="{{image_url}}" style="max-width: 250px; max-height:250px" />
-          </li>
+    <div class="row">
+      <div class="col-md-6">
+        {{#if Store}}
+          <h4>
+            <a href="{{link Store.hash Product.product_id}}">
+              <i class="fas fa-shopping-cart"></i> Buy Now
+            </a>
+          </h4>
+          <p>Click the "Buy Now" link to purchase this product from {{Store.name}}.</p>
         {{/if}}
-      </ul>
 
-      <h4>Product Options</h4>
-      <ul>
-        {{#each option_values}}
-          <li>
-            <strong>{{option_display_name}}:</strong> {{label}}
-          </li>
+        {{#each Product.variants}}
+          <h4>
+            <a href="{{link Store.hash sku}}">
+              Buy Now
+            </a>
+          </h4>
+
+          <ul>
+            {{#if image_url}}
+              <img src="{{image_url}}" alt="{{Product.name}}" style="max-width: 250px; max-height:250px" />
+            {{/if}}
+          <h4>Product Options</h4>
+          <ul>
+            {{#each option_values}}
+              <li>
+                <strong>{{option_display_name}}:</strong> {{label}}
+              </li>
+            {{/each}}
+          </ul>
         {{/each}}
-      </ul>
+      </div>
 
-    {{/each}}
+      <div class="col-md-6">
+        <p>{{Product.type}}</p>
+
+        <p><strong>SKU:</strong> {{Product.sku}}</p>
+
+        {{#if Product.description}}
+          <h4>Description</h4>
+          <p>{{Product.description}}</p>
+        {{/if}}
+
+        {{#if Product.categories}}
+          <h4>Categories</h4>
+          <ul>
+            {{#each Product.categories}}
+              <li>{{this.name}}</li>
+            {{/each}}
+          </ul>
+        {{/if}}
+
+        {{#if Product.brand}}
+          <h4>Brand</h4>
+          <p>{{Product.brand.name}}</p>
+        {{/if}}
+
+        {{#if Product.weight}}
+          <h4>Weight</h4>
+          <p>{{Product.weight}} {{Product.weight_unit}}</p>
+        {{/if}}
+      </div>
+    </div>
   </div>
 
 {{/if}}

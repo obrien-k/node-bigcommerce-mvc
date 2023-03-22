@@ -1,53 +1,70 @@
-{{#if message}}
-  <p class="text-center text-danger">{{message}}</p>
-{{/if}}
-
-<main>
-  {{#if Stores}}
-    <h2>Welcome, back! You've connected the following stores to MVC:</h2>
-    {{#each Stores}}
-      <p>
-        <strong>Store Name:</strong> {{this.name}}
-        <br>
-        <strong>Store Domain:</strong> {{this.domain}}
-      </p>
-      <a href="/store/{{this.hash}}">View Store Info</a>
-      <a href="/products/update">Sync Products from Store</a>
-    {{/each}}
-  {{else}}
-    <h2>Connect Your Store</h2>
-    <p>
-      To start syncing your store's products, you'll need to connect your store to this app.
-      <br>
-      <a href="/store/update">Connect Store Now</a>
-    </p>
+<div id="container">
+  <header>
+    <a href="/">
+      <h2>MVC Example</h2>
+    </a>
+  </header>
+  
+  <hr>
+  
+  {{#if message}}
+    <p class="text-center text-danger">{{message}}</p>
   {{/if}}
 
-  {{#if Products}}
-    <h2>Synced Products</h2>
-    {{#each Products}}
-      <h3>{{name}}</h3>
-      <p>
-        <strong>Product Type:</strong> {{type}}
-        <br>
-        <strong>SKU:</strong> {{sku}}
-      </p>
-      {{#if variants}}
-        <h4>Product Options</h4>
-        <ul>
-          {{#each variants}}
-            {{#each option_values}}
-              <li><strong>{{option_display_name}}:</strong> {{label}}</li>
-            {{/each}}
-          {{/each}}
-        </ul>
-      {{/if}}
-    {{/each}}
-  {{else}}
+  <main>
     {{#if Stores}}
-      <p>No products have been synced from your store yet.</p>
+      <h2>Welcome, back! You've connected the following stores to MVC:</h2>
+      <ul>
+        {{#each Stores}}
+          <li>
+            <p>
+              <strong>Store Name:</strong> {{this.name}}<br>
+              <strong>Store Domain:</strong> {{this.domain}}
+            </p>
+            <p>
+              <a href="/store/{{this.hash}}">View details for {{this.name}}</a>
+              <a href="/products/update"><i class="fas fa-sync"></i> Sync Products from Store</a>
+            </p>
+          </li>
+        {{/each}}
+      </ul>
     {{else}}
-      <p>Connect your store to download products.</p>
+      <h2>Connect Your Store</h2>
+      <p>
+        To start syncing your store's products, you'll need to connect your store to this app.<br>
+        <a href="/store/update">Connect Store Now</a>
+      </p>
     {{/if}}
-  {{/if}}
-</main>
+
+    {{#if Products}}
+      <h2>Synced Products</h2>
+      <ul>
+        {{#each Products}}
+          <li>
+            <h3>{{name}}</h3>
+            <p>
+              <strong>Product Type:</strong> {{type}}<br>
+              <strong>SKU:</strong> {{sku}}
+            </p>
+            {{#if variants}}
+              <h4>Product Options</h4>
+              <ul>
+                {{#each variants}}
+                  {{#each option_values}}
+                    <li><strong>{{option_display_name}}:</strong> {{label}}</li>
+                  {{/each}}
+                {{/each}}
+              </ul>
+            {{/if}}
+          </li>
+        {{/each}}
+      </ul>
+    {{else}}
+      {{#if Stores}}
+        <p>No products have been synced from your store yet.</p>
+      {{else}}
+        <p>Connect your store to download products.</p>
+      {{/if}}
+    {{/if}}
+  </main>
+</div>
