@@ -22,8 +22,10 @@ const server = app.listen(process.env.PORT, () => {
 });
 
 // MongoDB setup
-mongoose.connect(process.env.MONGO, { useNewUrlParser: true, useUnifiedTopology: true });
-
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connection.on('error', err => {
+  console.log(`MongoDB Connection Error: ${err}`);
+});
 const bigCommerce = new BigCommerce({
   logLevel: 'info',
   clientId: process.env.CLIENT,
@@ -67,32 +69,30 @@ app.use(productRoute);
 app.use(storeRoute);
 
 // ROUTES
-app.get('/', function(req, res) {
+app.get('/', async (req, res) => {
   try {
-    console.log(req + 'requestVal');
-    
-        Product.find({}, (err, allProducts) => {
-          if (err) {
-            console.log(err);
-          } else {
-            Store.find({}, (err, allStores) => {
-              if(err){
-                console.log(err);
-              } else {
-                res.render('index', {
-                  title: 'MVC Example',
-                  Products: allProducts,
-                  Stores: allStores
-                });
-              }
-            })
-            
-          }
-        });
+    const allProducts = await Product.find({});
+    const allStores = await Store.find({});
+    res.render('index', {
+      title: 'MVC Example',
+      Products: allProducts,
+      Stores: allStores
+    });
   } catch (err) {
     console.log(err);
+    res.status(500).send('Internal Server Error');
   }
 });
+
+// logger middleware
+const logger = (req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+};
+
+app.use(logger);
+
+
 
 router.get('/auth', (req, res, next) => {
   bigCommerce
