@@ -2,9 +2,9 @@ require('dotenv').config();
 
 const express = require('express'),
   router = express.Router(),
+  bodyParser = require('body-parser'),
+  exphbs = require('express-handlebars'),
   BigCommerce = require('node-bigcommerce');
-  bodyParser = require('body-parser');
-  exphbs = require('express-handlebars');
   mongoose = require('mongoose');
   (app = express()),
   (hbs = exphbs.create({
@@ -26,17 +26,17 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
 mongoose.connection.on('error', err => {
   console.log(`MongoDB Connection Error: ${err}`);
 });
+
 const bigCommerce = new BigCommerce({
   logLevel: 'info',
-  clientId: process.env.CLIENT,
-  accessToken: process.env.TOKEN,
-  secret: process.env.SECRET,
-  storeHash: process.env.HASH,
+  clientId: process.env.BIGC_CLIENT_ID,
+  accessToken: process.env.BIGC_ACCESS_TOKEN,
+  secret: process.env.BIGC_CLIENT_SECRET,
+  storeHash: process.env.BIGC_STORE_HASH,
   responseType: 'json',
   apiVersion: 'v3' // Default is v2
 });
 
-// View Setup
 app.engine(
   '.hbs',
   exphbs({
@@ -91,8 +91,6 @@ const logger = (req, res, next) => {
 };
 
 app.use(logger);
-
-
 
 router.get('/auth', (req, res, next) => {
   bigCommerce

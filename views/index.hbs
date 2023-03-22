@@ -9,7 +9,7 @@
 <main>
   {{#if Stores}}
   {{#each Stores}}
-    <a href="/store/{{hash}}" + >{{{domain}}} Store Info</a>
+    <a href="/store/{{this.hash}}" + >{{{domain}}} Store Info</a>
     <a href="/products/update">Update Products</a>
   {{/each}}
   {{else}}

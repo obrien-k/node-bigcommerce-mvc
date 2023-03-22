@@ -6,10 +6,10 @@ const BigCommerce = require('node-bigcommerce');
 // Initialize BigCommerce API client
 const bigCommerce = new BigCommerce({
   logLevel: 'info',
-  clientId: process.env.CLIENT,
-  accessToken: process.env.TOKEN,
-  secret: process.env.SECRET,
-  storeHash: process.env.HASH,
+  clientId: process.env.BIGC_CLIENT_ID,
+  accessToken: process.env.BIGC_ACCESS_TOKEN,
+  secret: process.env.BIGC_CLIENT_SECRET,
+  storeHash: process.env.BIGC_STORE_HASH,
   responseType: 'json',
   apiVersion: 'v3'
 });

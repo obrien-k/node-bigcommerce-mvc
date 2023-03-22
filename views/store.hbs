@@ -1,26 +1,22 @@
 <a href="/">
   <h2>MVC Example - {{Store.name}} Store Info</h2>
-</a></br>
-
+</a>
 {{#if message}}
 <p class="text-center text-danger">{{message}}</p>
 {{/if}}
 <a href="/">Go Back</a>
 <a href="/store/update">Update Store Info</a>
 {{#if Store}}
-
-<h4><strong>Store Name</strong>: <em>{{Store.name}}</em></h4>
-<div id="productDetails" style="max-height:30%;max-width:80%;">
-
-<strong>Store ID</strong>: <p>{{Store.hash}}</p>
-<strong>Store domain</strong>:{{Store.domain}}
-<strong>Store secure url</strong>:{{Store.secure_url}}
-<strong>Store control panel</strong>:{{Store.control_panel_base_url}}
-<ul>
-<li><strong>Store status</strong>:{{Store.status}}</li>
-</ul>
-
-
-</div>
+  <h4><strong>Store Name</strong>: <em>{{Store.name}}</em></h4>
+  <div id="productDetails" style="max-height:30%;max-width:80%;">
+    <strong>Store ID</strong>: <p>{{Store.hash}}</p>
+    {{#if Store.hasOwnProperty 'domain'}}
+      <strong>Store domain</strong>:{{Store.domain}}
+    {{/if}}
+    <strong>Store secure url</strong>:{{Store.secure_url}}
+    <strong>Store control panel</strong>:{{Store.control_panel_base_url}}
+    <ul>
+      <li><strong>Store status</strong>:{{Store.status}}</li>
+    </ul>
+  </div>
 {{/if}}
-
