@@ -1,36 +1,17 @@
-<a href="/"><header>MVC Example</header></a>
-</br>
-
 {{#if message}}
-<p class="text-center text-danger">{{message}}</p>
+  <p class="text-center text-danger">{{message}}</p>
 {{/if}}
-
 
 <main>
-  {{#if Stores}}
-  {{#each Stores}}
-    <a href="/store/{{hash}}" + >{{{domain}}} Store Info</a>
-    <a href="/products/update">Update Products</a>
-  {{/each}}
+  {{#if authorized}}
+    <h2>Welcome to MVC Example</h2>
+    <p>Your store has been authorized.</p>
   {{else}}
-  <a href="/store/update">Connect Store</a>
-   <p>Connect a Store to download products</p>
-{{/if}}
-{{#if Products}}
-    <h3>Products</h3>
-    {{#each Products}}
-
-      <h4><a href="{{_id}}">{{name}}</a></h4>
-
-      {{sku}}
-
-      {{type}}
-        {{#each variants}}
-          {{#each option_values}}
-          <strong>{{option_display_name}}</strong>: <em>{{label}}</em>
-          {{/each}}
-        {{/each}}
-    {{/each}}
-    {{else}}
-{{/if}}
+    <h2>Connect Your Store</h2>
+    <p>
+      To start syncing your store's products, you'll need to connect your store to this app.
+      <br>
+      <a href="/auth">Connect Store Now</a>
+    </p>
+  {{/if}}
 </main>

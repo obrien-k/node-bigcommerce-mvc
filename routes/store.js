@@ -2,18 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const Store = require('../models/Store.js');
-BigCommerce = require('node-bigcommerce');
+const bigCommerce = require('../datasources/bigcommerce.js');
 
-
-const bigCommerce = new BigCommerce({
-  logLevel: 'info',
-  clientId: process.env.BIGC_CLIENT_ID,
-  accessToken: process.env.BIGC_ACCESS_TOKEN,
-  secret: process.env.BIGC_CLIENT_SECRET,
-  storeHash: process.env.BIGC_STORE_HASH,
-  responseType: 'json',
-  apiVersion: 'v2' // Default is v2
-});
 router.get('/store', (req, res) => {
   Store.find({}).lean().exec((err, allStores) => {
     if (err) {
@@ -52,7 +42,7 @@ router.get('/store/update', async (req, res) => {
       console.log(`${newStore.name} is already inserted`);
     }
   } catch (err) {
-    console.log(`${err} line 71 Store.js`);
+    console.log(`${err} Store.js`);
     return err;
   }
 });

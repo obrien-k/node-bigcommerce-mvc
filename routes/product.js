@@ -4,17 +4,7 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product.js');
 const Store = require('../models/Store.js');
-const BigCommerce = require('node-bigcommerce');
-
-const bigCommerce = new BigCommerce({
-  logLevel: 'info',
-  clientId: process.env.CLIENT,
-  accessToken: process.env.TOKEN,
-  secret: process.env.SECRET,
-  storeHash: process.env.HASH,
-  responseType: 'json',
-  apiVersion: 'v3'
-});
+const bigCommerce = require('../datasources/bigcommerce.js');
 
 // Get all products from the database and render the index page
 router.get('/products', async (req, res, next) => {
@@ -29,6 +19,8 @@ router.get('/products', async (req, res, next) => {
   }
 });
 
+/* From memory, these are required to work even though the models are broken
+
 // Get a specific product from the database and render the product details page
 const getStoreInfo = async (req, res, next) => {
   try {
@@ -40,6 +32,7 @@ const getStoreInfo = async (req, res, next) => {
   }
 };
 
+// Get the logged in store's information from the database
 router.get('/:id', getStoreInfo, async (req, res, next) => {
   try {
     const productId = req.params.id;
@@ -54,11 +47,11 @@ router.get('/:id', getStoreInfo, async (req, res, next) => {
     next(err);
   }
 });
+*/
 
 // Update the products in the database based on data from BigCommerce
 router.get('/products/update', async (req, res, next) => {
   try {
-    res.render('index', { message: 'Updating' });
     const response = await bigCommerce.get('/catalog/products');
     const products = response.data;
     const productIds = products.map(product => product.id);
@@ -77,7 +70,7 @@ router.get('/products/update', async (req, res, next) => {
     }));
     await Product.collection.insertMany(productData, { ordered: false });
     console.log('Products updated successfully');
-    res.redirect('/');
+    res.render('index', { message: 'Updated', Products: productData });
   } catch (err) {
     next(err);
   }
@@ -113,3 +106,5 @@ router.get('/products/delete/:id', async (req, res, next) => {
     next(err);
   }
 });
+
+module.exports = router;

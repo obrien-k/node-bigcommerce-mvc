@@ -1,18 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product.js');
-const BigCommerce = require('node-bigcommerce');
+const bigCommerce = require('../datasources/bigcommerce.js');
 
-// Initialize BigCommerce API client
-const bigCommerce = new BigCommerce({
-  logLevel: 'info',
-  clientId: process.env.CLIENT,
-  accessToken: process.env.TOKEN,
-  secret: process.env.SECRET,
-  storeHash: process.env.HASH,
-  responseType: 'json',
-  apiVersion: 'v3'
-});
 
 // Handle webhook events
 router.post('/webhooks', async (req, res) => {

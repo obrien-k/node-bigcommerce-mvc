@@ -2,22 +2,25 @@ require('dotenv').config();
 
 const express = require('express'),
   router = express.Router(),
-  BigCommerce = require('node-bigcommerce');
-  bodyParser = require('body-parser');
-  exphbs = require('express-handlebars');
-  mongoose = require('mongoose');
+  bodyParser = require('body-parser'),
+  exphbs = require('express-handlebars'),
+  mongoose = require('mongoose'),
+  helmet = require('helmet'),
+  bigCommerce = require('./datasources/bigcommerce.js');
   (app = express()),
   (hbs = exphbs.create({
     /* config */
   }));
 
-  const productRoute = require('./routes/product');
-  const Product = require('./models/Product.js');  
-  const storeRoute = require('./routes/store');
-  const Store = require('./models/Store.js');
+  // Routes
+  const productRoute = require('./routes/product'),
+        Product = require('./models/Product.js'),
+        storeRoute = require('./routes/store'),
+        Store = require('./models/Store.js'),
+        authRoute = require('./routes/auth');
   
 
-const server = app.listen(process.env.PORT, () => {
+const server = app.listen(process.env.PORT || 3000, () => {
   console.log('Express listening at ', server.address().port);
 });
 
@@ -26,17 +29,11 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
 mongoose.connection.on('error', err => {
   console.log(`MongoDB Connection Error: ${err}`);
 });
-const bigCommerce = new BigCommerce({
-  logLevel: 'info',
-  clientId: process.env.CLIENT,
-  accessToken: process.env.TOKEN,
-  secret: process.env.SECRET,
-  storeHash: process.env.HASH,
-  responseType: 'json',
-  apiVersion: 'v3' // Default is v2
-});
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.set('debug', true);
 
-// View Setup
 app.engine(
   '.hbs',
   exphbs({
@@ -60,16 +57,34 @@ app.engine(
     }
   })
 );
-mongoose.set('debug', true);
+
 app.set('view engine', '.hbs');
 app.set('views', __dirname + '/views');
 app.use(express.static('views/images')); 
 app.use(bodyParser.json());
-app.use(productRoute);
-app.use(storeRoute);
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+    frameAncestors: ["'self'", "'*.mybigcommerce.com'", "'*.bigcommerce.com'"]
+  }
+}));
+
+app.use(productRoute, storeRoute, authRoute);
+
+// logger middleware
+const logger = (req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+};
+
+app.use(logger);
 
 // ROUTES
+
 app.get('/', async (req, res) => {
+  console.log(req + "index.js line 85 get req");
+  res.render('index', {title: 'MVC Example'});
+  /*
   try {
     const allProducts = await Product.find({});
     const allStores = await Store.find({});
@@ -82,33 +97,5 @@ app.get('/', async (req, res) => {
     console.log(err);
     res.status(500).send('Internal Server Error');
   }
-});
-
-// logger middleware
-const logger = (req, res, next) => {
-  console.log(`${req.method} ${req.path}`);
-  next();
-};
-
-app.use(logger);
-
-
-
-router.get('/auth', (req, res, next) => {
-  bigCommerce
-    .authorize(req.query)
-    .then(data =>
-      res
-        .render('integrations/auth', { title: 'Authorized!', data: data })
-        .catch(next)
-    );
-});
-
-router.get('/load', (req, res, next) => {
-  try {
-    const data = bigCommerce.verify(req.query['signed_payload']);
-    res.render('integrations/welcome', { title: 'Welcome!', data: data });
-  } catch (err) {
-    next(err);
-  }
+  */
 });
