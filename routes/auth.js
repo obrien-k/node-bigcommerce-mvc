@@ -1,3 +1,4 @@
+
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
@@ -10,21 +11,15 @@ const bigCommerce = require('../datasources/bigcommerce.js');
 router.get('/auth', (req, res, next) => {
   bigCommerce.authorize(req.query)
   .then(data => console.log(data))
-  .then(data => res.render('integrations/auth', { title: 'Authorized!' })
-  .catch(err));
+  .then(data => res.render('integrations/auth', { title: 'Authorized!' }))
+  .catch((err) => {console.error(err)});
   });
-// Example /auth call from BigCommerce
-// GET https://your_app.example.com/auth?account_uuid=12345678-90ab-cdef-1234-567890abcdef&code=qr6h3thvbvag2ffq&context=stores%2Fg5cd38&scope=store_v2_orders+store_channel_listings_read_only
-// Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
-// Referer: https://login.bigcommerce.com/
 
 // Handle the callback from BigCommerce after the user has granted authorization
 router.get('/auth/callback', async (req, res, next) => {
   const clientId = process.env.BIGC_CLIENT_ID;
   const clientSecret = process.env.BIGC_CLIENT_SECRET;
-  // ruling out account_uuid bugginess
-  const accountUuid = req.query.account_uuid;
-  const storeHash = req.query.context ? req.query.context.replace('stores/', '') : null;
+  const context = req.query.context;
   const authCode = req.query.code;
   const scopes = req.query.scope || 'store_v2_default';
 
@@ -34,14 +29,10 @@ router.get('/auth/callback', async (req, res, next) => {
     client_secret: clientSecret,
     redirect_uri: process.env.REDIRECT_URI,
     grant_type: 'authorization_code',
+    context: context,
     code: authCode,
     scope: scopes
-  };  
-  console.log('Account UUID:', accountUuid);
-  console.log('Client ID:', clientId);
-  console.log('Client Secret:', clientSecret);
-  console.log('Redirect URI:', process.env.REDIRECT_URI);
-  console.log('Token Payload:', JSON.stringify(tokenPayload, null, 2));
+  };
 
   try {
     const tokenResponse = await axios.post(tokenUrl, tokenPayload, {
