@@ -6,6 +6,7 @@ const express = require('express'),
   exphbs = require('express-handlebars'),
   mongoose = require('mongoose'),
   helmet = require('helmet'),
+  cors = require("cors");
   bigCommerce = require('./datasources/bigcommerce.js');
   (app = express()),
   (hbs = exphbs.create({
@@ -62,10 +63,11 @@ app.set('view engine', '.hbs');
 app.set('views', __dirname + '/views');
 app.use(express.static('views/images')); 
 app.use(bodyParser.json());
+app.use(cors());
 app.use(helmet.contentSecurityPolicy({
   directives: {
     defaultSrc: ["'self'"],
-    frameAncestors: ["'self'", "'*.mybigcommerce.com'", "'*.bigcommerce.com'"]
+    frameAncestors: ["'self'", "*.mybigcommerce.com", "*.bigcommerce.com"]
   }
 }));
 

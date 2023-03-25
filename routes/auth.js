@@ -4,19 +4,28 @@ const router = express.Router();
 const axios = require('axios');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 const Store = require('../models/Store.js');
 const User = require('../models/User.js');
 const bigCommerce = require('../datasources/bigcommerce.js');
 
-router.get('/auth', (req, res, next) => {
+var corsOptions = {
+  origin: 'https://*.bigcommerce.com',
+  optionsSuccessStatus: 200
+}
+
+router.get('/auth', cors(corsOptions), (req, res, next) => {
+  console.log('auth route')
+  console.log(req.query)
   bigCommerce.authorize(req.query)
   .then(data => console.log(data))
-  .then(data => res.render('integrations/auth', { title: 'Authorized!' }))
-  .catch((err) => {console.error(err)});
+  .then(data => res.render('integrations/auth', { title: 'Authorized!', data: data }))
+  .catch((err) => {console.error(err)}, res.status(500));
   });
 
 // Handle the callback from BigCommerce after the user has granted authorization
 router.get('/auth/callback', async (req, res, next) => {
+  console.log('auth callback route')
   const clientId = process.env.BIGC_CLIENT_ID;
   const clientSecret = process.env.BIGC_CLIENT_SECRET;
   const context = req.query.context;

@@ -8,6 +8,7 @@ const bigCommerce = new BigCommerce({
   storeHash: process.env.BIGC_STORE_HASH,
   callback: process.env.REDIRECT_URI,
   responseType: 'json',
+  headers: { 'Accept-Encoding': '*' },
   apiVersion: 'v3' // Default is v2
 });
 
